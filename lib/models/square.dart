@@ -2,7 +2,7 @@ class Square {
   final int _file;
   final int _rank;
 
-  Square(this._file, this._rank);
+  const Square(this._file, this._rank);
 
   factory Square.fromId(int id) {
     if (id < 0 || id > 63) {
