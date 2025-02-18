@@ -1,8 +1,8 @@
 class Square {
-  final int file;
-  final int rank;
+  final int _file;
+  final int _rank;
 
-  Square(this.file, this.rank);
+  Square(this._file, this._rank);
 
   factory Square.fromId(int id) {
     if (id < 0 || id > 63) {
@@ -37,13 +37,16 @@ class Square {
     return Square(file, rank);
   }
 
-  bool get isDark => (file + rank) % 2 == 0;
+  int get file => _file;
+  int get rank => _rank;
 
-  int get id => (rank - 1) * 8 + (file - 1);
+  bool get isDark => (_file + _rank) % 2 == 0;
+
+  int get id => (_rank - 1) * 8 + (_file - 1);
 
   String get algebraicNotation {
-    String fileLetter = String.fromCharCode('a'.codeUnitAt(0) + file - 1);
-    return '$fileLetter$rank';
+    String fileLetter = String.fromCharCode('a'.codeUnitAt(0) + _file - 1);
+    return '$fileLetter$_rank';
   }
 
   @override
