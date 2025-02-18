@@ -1,6 +1,9 @@
 import 'package:chess_new/constants.dart';
+import 'package:chess_new/models/piece.dart';
 import 'package:chess_new/models/square.dart';
+import 'package:chess_new/utils.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 class Board extends StatefulWidget {
   const Board({super.key});
@@ -31,7 +34,19 @@ class _BoardState extends State<Board> {
               square.isDark
                   ? Color(Constants.darkSquareColor)
                   : Color(Constants.lightSquareColor),
-          child: Center(child: Text(square.algebraicNotation)),
+          child: Center(
+            child: Stack(
+              children: [
+                Opacity(
+                  opacity: 0.5,
+                  child: SvgPicture.asset(
+                    Utils.iconSrcOf(PieceType.bishop),
+                  ),
+                ),
+                Center(child: Text(square.algebraicNotation)),
+              ],
+            ),
+          ),
         );
       },
     );
