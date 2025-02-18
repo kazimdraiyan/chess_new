@@ -45,4 +45,9 @@ class Square {
     String fileLetter = String.fromCharCode('a'.codeUnitAt(0) + file - 1);
     return '$fileLetter$rank';
   }
+
+  @override
+  String toString() {
+    return algebraicNotation;
+  }
 }
