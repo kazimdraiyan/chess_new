@@ -18,7 +18,8 @@ class Square {
   }
 
   factory Square.fromAlgebraicNotation(String algebraicNotation) {
-    if (algebraicNotation.length != 2) throw ArgumentError('Algebraic notation must contain two letters');
+    if (algebraicNotation.length != 2)
+      throw ArgumentError('Algebraic notation must contain two letters');
 
     final fileName = algebraicNotation.substring(0, 1).toLowerCase();
     // Convert ASCII: 'a' = 97, so subtract 96 to get 1 for 'a'
@@ -53,4 +54,16 @@ class Square {
   String toString() {
     return algebraicNotation;
   }
+
+  @override
+  bool operator ==(Object square) {
+    if (square is Square) {
+      return square._file == this._file && square._rank == this._rank;
+    } else {
+      return false;
+    }
+  }
+
+  @override
+  int get hashCode => _file * 31 + _rank; // TODO: understand this
 }
