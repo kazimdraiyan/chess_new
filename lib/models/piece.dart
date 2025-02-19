@@ -8,9 +8,9 @@ class Piece {
   final bool _isWhite;
 
   PieceType _pieceType;
-  Square square;
+  Square? square;
 
-  Piece({required PieceType pieceType, required this.square, bool isWhite = true})
+  Piece({required PieceType pieceType, this.square, bool isWhite = true})
     : _pieceType = pieceType,
       _isWhite = isWhite;
   
@@ -23,5 +23,10 @@ class Piece {
     } else {
       print("Invalid promotion");
     }
+  }
+
+  @override
+  String toString() {
+    return '$_pieceType ${isWhite ? 'White' : 'Black'}';
   }
 }

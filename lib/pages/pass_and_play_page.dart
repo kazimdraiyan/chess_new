@@ -1,4 +1,4 @@
-import 'package:chess_new/models/square.dart';
+import 'package:chess_new/models/piece_placement.dart';
 import 'package:chess_new/widgets/board.dart';
 import 'package:flutter/material.dart';
 
@@ -12,7 +12,12 @@ class PassAndPlayPage extends StatelessWidget {
       body: Column(
         children: [
           Board(),
-          TextField(onSubmitted: (value) => Square.fromAlgebraicNotation(value)), // for testing purposes
+          TextField(
+            onSubmitted: (value) {
+              final piecePlacement = PiecePlacement.fromFenPosition(value);
+              print(piecePlacement.fenPosition);
+            },
+          ), // for testing purposes
         ],
       ),
     );

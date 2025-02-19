@@ -1,3 +1,1 @@
-class BoardManager {
-  
-}
+class BoardManager {}

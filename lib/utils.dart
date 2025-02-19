@@ -1,7 +1,9 @@
+import 'dart:collection';
+
 import 'package:chess_new/models/piece.dart';
 
 class Utils {
-  static const fenInitial = {
+  static const fenInitialOf = {
     PieceType.king: "k",
     PieceType.queen: "q",
     PieceType.rook: "r",
@@ -10,7 +12,11 @@ class Utils {
     PieceType.pawn: "p",
   };
 
+  static final pieceTypeNamed = LinkedHashMap.fromEntries(
+    fenInitialOf.entries.map((entry) => MapEntry(entry.value, entry.key)),
+  );
+
   static String iconSrcOf(PieceType pieceType, {bool isWhite = true}) {
-    return 'assets/pieces_icon/${fenInitial[pieceType]!}${isWhite ? 'l' : 'd'}.svg';
+    return 'assets/pieces_icon/${fenInitialOf[pieceType]!}${isWhite ? 'l' : 'd'}.svg';
   }
 }
