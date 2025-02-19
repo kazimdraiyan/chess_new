@@ -14,8 +14,11 @@ class BoardAnalyzer {
     } else if (piece.pieceType == PieceType.rook) {
       return _rookLegalMoves(square); // TODO: Also check if it's pinned or not
     } else if (piece.pieceType == PieceType.bishop) {
-      return _bishopLegalMoves(square); // TODO: Implement other piece moves
+      return _bishopLegalMoves(square);
+    } else if (piece.pieceType == PieceType.queen) {
+      return _queenLegalMoves(square);
     } else {
+      // TODO: Implement other piece moves
       return [];
     }
   }
@@ -36,6 +39,17 @@ class BoardAnalyzer {
     print(diagonalSquares);
 
     return traverseTillBlockage(diagonalSquares, piece!.isWhite);
+  }
+
+  List<Square> _queenLegalMoves(Square square) {
+    final piece = _piecePlacement.pieceAt(square);
+
+    final orthogonalSquares = square.orthogonalSquares;
+    final diagonalSquares = square.diagonalSquares;
+    final allDirectionalSquares = [...orthogonalSquares, ...diagonalSquares];
+    print(allDirectionalSquares);
+
+    return traverseTillBlockage(allDirectionalSquares, piece!.isWhite);
   }
 
   List<Square> traverseTillBlockage(
