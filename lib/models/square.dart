@@ -84,10 +84,7 @@ class Square {
 
       var testingFile = file + fileStep;
       var testingRank = rank + rankStep;
-      while (1 <= testingFile &&
-          testingFile <= 8 &&
-          1 <= testingRank &&
-          testingRank <= 8) {
+      while (isFileRankValid(testingFile, testingRank)) {
         singleDirectionSquaresTemp.add(Square(testingFile, testingRank));
         testingFile += fileStep;
         testingRank += rankStep;
@@ -106,6 +103,10 @@ class Square {
 
   static bool isSquareIdValid(int squareId) {
     return squareId >= 0 && squareId <= 63; // TODO: Use this function instead
+  }
+
+  static bool isFileRankValid(int file, int rank) {
+    return 1 <= file && file <= 8 && 1 <= rank && rank <= 8;
   }
 
   @override

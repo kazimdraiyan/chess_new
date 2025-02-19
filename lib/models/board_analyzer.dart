@@ -21,6 +21,8 @@ class BoardAnalyzer {
       return _knightLegalMoves(square);
     } else if (piece.pieceType == PieceType.pawn) {
       return _pawnLegalMoves(square);
+    } else if (piece.pieceType == PieceType.king) {
+      return _kingLegalMoves(square);
     } else {
       // TODO: Implement other piece moves
       return [];
@@ -68,10 +70,7 @@ class BoardAnalyzer {
 
         final testingFile = square.file + fileStep;
         final testingRank = square.rank + rankStep;
-        if (1 <= testingFile &&
-            testingFile <= 8 &&
-            1 <= testingRank &&
-            testingRank <= 8) {
+        if (Square.isFileRankValid(testingFile, testingRank)) {
           knightSquares.add(Square(testingFile, testingRank));
         }
       }
@@ -128,6 +127,27 @@ class BoardAnalyzer {
       ),
       ...pawnCapturableSquares,
     ];
+  }
+
+  List<Square> _kingLegalMoves(Square square) {
+    final piece = _piecePlacement.pieceAt(square)!;
+
+    final result = <Square>[];
+
+    for (var fileStep = -1; fileStep <= 1; fileStep++) {
+      for (var rankStep = -1; rankStep <= 1; rankStep++) {
+        final testingFile = square.file + fileStep;
+        final testingRank = square.rank + rankStep;
+        if (Square.isFileRankValid(testingFile, testingRank)) {
+          final testingSquare = Square(testingFile, testingRank);
+          if (!isOccupiedByFriendlyPiece(testingSquare, piece.isWhite)) {
+            result.add(testingSquare);
+          }
+        }
+      }
+    }
+
+    return result;
   }
 
   List<Square> traverseTillBlockage(
