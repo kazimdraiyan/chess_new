@@ -137,9 +137,11 @@ class BoardAnalyzer {
     final result = <Square>[];
 
     for (final singleDirectionSquares in directionalSquares) {
-      singleDirectionTraverseTillBlockage(
-        singleDirectionSquares,
-        isOriginalPieceWhite,
+      result.addAll(
+        singleDirectionTraverseTillBlockage(
+          singleDirectionSquares,
+          isOriginalPieceWhite,
+        ),
       );
     }
     return result;
