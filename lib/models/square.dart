@@ -12,14 +12,13 @@ class Square {
     final file = (id % 8) + 1;
     final rank = (id ~/ 8) + 1;
 
-    print('$file, $rank');
-
     return Square(file, rank);
   }
 
   factory Square.fromAlgebraicNotation(String algebraicNotation) {
-    if (algebraicNotation.length != 2)
+    if (algebraicNotation.length != 2) {
       throw ArgumentError('Algebraic notation must contain two letters');
+    }
 
     final fileName = algebraicNotation.substring(0, 1).toLowerCase();
     // Convert ASCII: 'a' = 97, so subtract 96 to get 1 for 'a'
@@ -56,14 +55,14 @@ class Square {
   }
 
   @override
-  bool operator ==(Object square) {
-    if (square is Square) {
-      return square._file == this._file && square._rank == this._rank;
+  bool operator ==(Object other) {
+    if (other is Square) {
+      return other._file == _file && other._rank == _rank;
     } else {
       return false;
     }
   }
 
   @override
-  int get hashCode => _file * 31 + _rank; // TODO: understand this
+  int get hashCode => _file * 31 + _rank; // TODO: Understand this
 }
