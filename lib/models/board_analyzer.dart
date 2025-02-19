@@ -1,3 +1,4 @@
+import 'package:chess_new/models/piece.dart';
 import 'package:chess_new/models/piece_placement.dart';
 import 'package:chess_new/models/square.dart';
 
@@ -10,27 +11,46 @@ class BoardAnalyzer {
     final piece = _piecePlacement.pieceAt(square);
     if (piece == null) {
       return [];
-    } else {
+    } else if (piece.pieceType == PieceType.rook) {
       return _rookLegalMoves(square);
+    } else {
+      return []; // TODO: Implement other piece moves
     }
   }
 
-  List<Square> _rookLegalMoves(Square square, {bool isWhite = true}) {
-    final currentFile = square.file;
-    final currentRank = square.rank;
+  List<Square> _rookLegalMoves(Square square) {
+    final piece = _piecePlacement.pieceAt(square);
+    if (piece == null) return [];
 
-    final legalSquares = <Square>[];
+    final orthogonalSquares = square.orthogonalSquares;
+    print(orthogonalSquares);
 
-    for (var i = 1; i <= 8; i++) {
-      if (i != currentRank) {
-        legalSquares.add(Square(currentFile, i));
+    return traverseTillBlockage(orthogonalSquares, piece.isWhite);
+  }
+
+  List<Square> traverseTillBlockage(
+    List<List<Square>> directionalSquares,
+    bool isOriginalPieceWhite,
+  ) {
+    final result = <Square>[];
+
+    for (final singleDirectionSquares in directionalSquares) {
+      for (final testingSquare in singleDirectionSquares) {
+        if (_piecePlacement.isEmpty(testingSquare)) {
+          result.add(testingSquare);
+        } else {
+          if ((_piecePlacement.isOccupiedByWhite(testingSquare) &&
+                  isOriginalPieceWhite) ||
+              (_piecePlacement.isOccupiedByBlack(testingSquare) &&
+                  !isOriginalPieceWhite)) {
+            break; // Blocked by a friendly piece, so continue to traverse on the next direction
+          } else {
+            result.add(testingSquare);
+            break; // Blocked by a enemy piece, so include the square and continue to traverse on the next direction
+          }
+        }
       }
     }
-    for (var i = 1; i <= 8; i++) {
-      if (i != currentFile) {
-        legalSquares.add(Square(i, currentRank));
-      }
-    }
-    return legalSquares;
+    return result;
   }
 }

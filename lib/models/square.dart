@@ -49,6 +49,36 @@ class Square {
     return '$fileLetter$_rank';
   }
 
+  /// [[Top], [Right], [Bottom], [Left]]
+  List<List<Square>> get orthogonalSquares {
+    final result = <List<Square>>[];
+
+    List<Square> singleDirectionSquares(bool isSameFile, int step) {
+      final singleDirectionSquaresTemp = <Square>[];
+      for (
+        var i = step + (isSameFile ? rank : file);
+        step == 1 ? i <= 8 : i >= 1;
+        i += step
+      ) {
+        singleDirectionSquaresTemp.add(
+          Square(isSameFile ? file : i, isSameFile ? i : rank),
+        );
+      }
+      return singleDirectionSquaresTemp;
+    }
+
+    result.add(singleDirectionSquares(true, 1)); // Top
+    result.add(singleDirectionSquares(false, 1)); // Right
+    result.add(singleDirectionSquares(true, -1)); // Bottom
+    result.add(singleDirectionSquares(false, -1)); // Left
+
+    return result;
+  }
+
+  static bool isSquareIdValid(int squareId) {
+    return squareId >= 0 && squareId <= 63; // TODO: Use this function instead
+  }
+
   @override
   String toString() {
     return algebraicNotation;

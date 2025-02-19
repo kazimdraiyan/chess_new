@@ -75,16 +75,11 @@ class PiecePlacement {
     return pieceAt(square) == null;
   }
 
-  // white = true means: isOccupiedByWhite, white = false means: isOccupiedByBlack
-  bool isOccupiedByColor(Square square, {required bool white}) {
-    if (isEmpty(square)) {
-      return false;
-    } else {
-      if (white) {
-        return pieceAt(square)!.isWhite;
-      } else {
-        return !pieceAt(square)!.isWhite;
-      }
-    }
+  bool isOccupiedByWhite(Square square) {
+    return !isEmpty(square) && pieceAt(square)!.isWhite;
+  }
+
+  bool isOccupiedByBlack(Square square) {
+    return !isEmpty(square) && !pieceAt(square)!.isWhite;
   }
 }

@@ -61,6 +61,12 @@ class _BoardState extends State<Board> {
                 // print(boardManager.currentPiecePlacement.pieceAt(square));
                 setState(() {
                   highlightedSquares = boardManager.legalMoves(square);
+                  // highlightedSquares =
+                  //     square.orthogonalSquares
+                  //         .expand(
+                  //           (singleDirectionSquares) => singleDirectionSquares,
+                  //         )
+                  //         .toList();
                 });
               },
               child: Container(

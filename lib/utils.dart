@@ -14,7 +14,7 @@ class Utils {
 
   static final pieceTypeNamed = LinkedHashMap.fromEntries(
     fenInitialOf.entries.map((entry) => MapEntry(entry.value, entry.key)),
-  );
+  ); // Inverse of fenInitialOf
 
   static String iconSrcOf(PieceType pieceType, {bool isWhite = true}) {
     return 'assets/pieces_icon/${fenInitialOf[pieceType]!}${isWhite ? 'l' : 'd'}.svg';
