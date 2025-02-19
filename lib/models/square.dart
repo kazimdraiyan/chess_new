@@ -75,6 +75,35 @@ class Square {
     return result;
   }
 
+  /// [[TopRight], [BottomRight], [BottomLeft], [TopLeft]]
+  List<List<Square>> get diagonalSquares {
+    final result = <List<Square>>[];
+
+    List<Square> singleDirectionSquares(int fileStep, int rankStep) {
+      final singleDirectionSquaresTemp = <Square>[];
+
+      var testingFile = file + fileStep;
+      var testingRank = rank + rankStep;
+      while (1 <= testingFile &&
+          testingFile <= 8 &&
+          1 <= testingRank &&
+          testingRank <= 8) {
+        singleDirectionSquaresTemp.add(Square(testingFile, testingRank));
+        testingFile += fileStep;
+        testingRank += rankStep;
+      }
+
+      return singleDirectionSquaresTemp;
+    }
+
+    result.add(singleDirectionSquares(1, 1)); // TopRight
+    result.add(singleDirectionSquares(1, -1)); // BottomRight
+    result.add(singleDirectionSquares(-1, -1)); // BottomLeft
+    result.add(singleDirectionSquares(-1, 1)); // TopLeft
+
+    return result;
+  }
+
   static bool isSquareIdValid(int squareId) {
     return squareId >= 0 && squareId <= 63; // TODO: Use this function instead
   }

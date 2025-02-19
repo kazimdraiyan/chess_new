@@ -12,20 +12,30 @@ class BoardAnalyzer {
     if (piece == null) {
       return [];
     } else if (piece.pieceType == PieceType.rook) {
-      return _rookLegalMoves(square);
+      return _rookLegalMoves(square); // TODO: Also check if it's pinned or not
+    } else if (piece.pieceType == PieceType.bishop) {
+      return _bishopLegalMoves(square); // TODO: Implement other piece moves
     } else {
-      return []; // TODO: Implement other piece moves
+      return [];
     }
   }
 
   List<Square> _rookLegalMoves(Square square) {
     final piece = _piecePlacement.pieceAt(square);
-    if (piece == null) return [];
 
     final orthogonalSquares = square.orthogonalSquares;
     print(orthogonalSquares);
 
-    return traverseTillBlockage(orthogonalSquares, piece.isWhite);
+    return traverseTillBlockage(orthogonalSquares, piece!.isWhite);
+  }
+
+  List<Square> _bishopLegalMoves(Square square) {
+    final piece = _piecePlacement.pieceAt(square);
+
+    final diagonalSquares = square.diagonalSquares;
+    print(diagonalSquares);
+
+    return traverseTillBlockage(diagonalSquares, piece!.isWhite);
   }
 
   List<Square> traverseTillBlockage(
