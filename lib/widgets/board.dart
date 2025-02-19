@@ -30,6 +30,11 @@ class _BoardState extends State<Board> {
         Padding(
           padding: const EdgeInsets.all(8.0),
           child: TextField(
+            decoration: InputDecoration(
+              hintText: "SET Fen",
+              border: OutlineInputBorder(),
+            ),
+
             onSubmitted: (value) {
               setState(() {
                 boardManager.currentPiecePlacement =
