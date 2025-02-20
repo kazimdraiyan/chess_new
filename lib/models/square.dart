@@ -53,7 +53,7 @@ class Square {
   List<List<Square>> get orthogonalSquares {
     final result = <List<Square>>[];
 
-    List<Square> singleDirectionSquares(bool isSameFile, int step) {
+    List<Square> singleOrthogonalDirectionSquares(bool isSameFile, int step) {
       final singleDirectionSquaresTemp = <Square>[];
       for (
         var i = step + (isSameFile ? rank : file);
@@ -67,10 +67,10 @@ class Square {
       return singleDirectionSquaresTemp;
     }
 
-    result.add(singleDirectionSquares(true, 1)); // Top
-    result.add(singleDirectionSquares(false, 1)); // Right
-    result.add(singleDirectionSquares(true, -1)); // Bottom
-    result.add(singleDirectionSquares(false, -1)); // Left
+    result.add(singleOrthogonalDirectionSquares(true, 1)); // Top
+    result.add(singleOrthogonalDirectionSquares(false, 1)); // Right
+    result.add(singleOrthogonalDirectionSquares(true, -1)); // Bottom
+    result.add(singleOrthogonalDirectionSquares(false, -1)); // Left
 
     return result;
   }
@@ -79,7 +79,7 @@ class Square {
   List<List<Square>> get diagonalSquares {
     final result = <List<Square>>[];
 
-    List<Square> singleDirectionSquares(int fileStep, int rankStep) {
+    List<Square> singleDiagonalDirectionSquares(int fileStep, int rankStep) {
       final singleDirectionSquaresTemp = <Square>[];
 
       var testingFile = file + fileStep;
@@ -93,11 +93,42 @@ class Square {
       return singleDirectionSquaresTemp;
     }
 
-    result.add(singleDirectionSquares(1, 1)); // TopRight
-    result.add(singleDirectionSquares(1, -1)); // BottomRight
-    result.add(singleDirectionSquares(-1, -1)); // BottomLeft
-    result.add(singleDirectionSquares(-1, 1)); // TopLeft
+    result.add(singleDiagonalDirectionSquares(1, 1)); // TopRight
+    result.add(singleDiagonalDirectionSquares(1, -1)); // BottomRight
+    result.add(singleDiagonalDirectionSquares(-1, -1)); // BottomLeft
+    result.add(singleDiagonalDirectionSquares(-1, 1)); // TopLeft
 
+    return result;
+  }
+
+  List<Square> get knightSquares {
+    final result = <Square>[];
+    for (var fileStep = -2; fileStep <= 2; fileStep++) {
+      if (fileStep == 0) continue;
+      for (var rankStep = -2; rankStep <= 2; rankStep++) {
+        if (rankStep == 0 || fileStep.abs() == rankStep.abs()) continue;
+
+        final testingFile = file + fileStep;
+        final testingRank = rank + rankStep;
+        if (Square.isFileRankValid(testingFile, testingRank)) {
+          result.add(Square(testingFile, testingRank));
+        }
+      }
+    }
+    return result;
+  }
+
+  List<Square> get kingSquares {
+    final result = <Square>[];
+    for (var fileStep = -1; fileStep <= 1; fileStep++) {
+      for (var rankStep = -1; rankStep <= 1; rankStep++) {
+        final testingFile = file + fileStep;
+        final testingRank = rank + rankStep;
+        if (Square.isFileRankValid(testingFile, testingRank)) {
+          result.add(Square(testingFile, testingRank));
+        }
+      }
+    }
     return result;
   }
 

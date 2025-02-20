@@ -60,30 +60,16 @@ class BoardAnalyzer {
 
   List<Square> _knightLegalMoves(Square square) {
     final piece = _piecePlacement.pieceAt(square)!;
-    final result = <Square>[];
+    final knightSquares = square.knightSquares;
 
-    final knightSquares = <Square>[];
-    for (var fileStep = -2; fileStep <= 2; fileStep++) {
-      if (fileStep == 0) continue;
-      for (var rankStep = -2; rankStep <= 2; rankStep++) {
-        if (rankStep == 0 || fileStep.abs() == rankStep.abs()) continue;
+    return filterBlockageByFriendlyPieces(knightSquares, piece.isWhite);
+  }
 
-        final testingFile = square.file + fileStep;
-        final testingRank = square.rank + rankStep;
-        if (Square.isFileRankValid(testingFile, testingRank)) {
-          knightSquares.add(Square(testingFile, testingRank));
-        }
-      }
-    }
+  List<Square> _kingLegalMoves(Square square) {
+    final piece = _piecePlacement.pieceAt(square)!;
+    final kingSquares = square.kingSquares;
 
-    // Filters blockage by friendly pieces
-    for (final testingSquare in knightSquares) {
-      if (!isOccupiedByFriendlyPiece(testingSquare, piece.isWhite)) {
-        result.add(testingSquare);
-      }
-    }
-
-    return result;
+    return filterBlockageByFriendlyPieces(kingSquares, piece.isWhite);
   }
 
   List<Square> _pawnLegalMoves(Square square) {
@@ -129,24 +115,16 @@ class BoardAnalyzer {
     ];
   }
 
-  List<Square> _kingLegalMoves(Square square) {
-    final piece = _piecePlacement.pieceAt(square)!;
-
+  List<Square> filterBlockageByFriendlyPieces(
+    List<Square> testingSquares,
+    bool isOriginalPieceWhite,
+  ) {
     final result = <Square>[];
-
-    for (var fileStep = -1; fileStep <= 1; fileStep++) {
-      for (var rankStep = -1; rankStep <= 1; rankStep++) {
-        final testingFile = square.file + fileStep;
-        final testingRank = square.rank + rankStep;
-        if (Square.isFileRankValid(testingFile, testingRank)) {
-          final testingSquare = Square(testingFile, testingRank);
-          if (!isOccupiedByFriendlyPiece(testingSquare, piece.isWhite)) {
-            result.add(testingSquare);
-          }
-        }
+    for (final testingSquare in testingSquares) {
+      if (!isOccupiedByFriendlyPiece(testingSquare, isOriginalPieceWhite)) {
+        result.add(testingSquare);
       }
     }
-
     return result;
   }
 
