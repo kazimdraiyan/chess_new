@@ -3,15 +3,17 @@ import 'package:chess_new/models/square.dart';
 import 'package:chess_new/utils.dart';
 
 class PiecePlacement {
-  final List<List<Piece?>> pieceMatrix =
-      []; // rank 1 (file 1-8), rank 2 (file 1-8), ...
+  late final List<List<Piece?>>
+  pieceMatrix; // rank 1 (file 1-8), rank 2 (file 1-8), ...
+
+  PiecePlacement.fromPieceMatrix(this.pieceMatrix);
 
   PiecePlacement.fromFenPosition(String fenPosition) {
-    final fenRanks = fenPosition.split('/').reversed;
+    pieceMatrix = [];
 
+    final fenRanks = fenPosition.split('/').reversed;
     for (final fenRank in fenRanks) {
       List<Piece?> rank = [];
-
       final fenRankLetters = fenRank.split('');
       for (final fenRankLetter in fenRankLetters) {
         final emptySquareCount = int.tryParse(fenRankLetter);
@@ -34,6 +36,19 @@ class PiecePlacement {
     return PiecePlacement.fromFenPosition(
       'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR',
     );
+  }
+
+  PiecePlacement movePiece(Square fromSquare, Square toSquare) {
+    final pieceMatrixCopy = [
+      for (final rank in pieceMatrix) [...rank],
+    ];
+    final piece = pieceAt(fromSquare);
+    if (piece == null) {
+      return this; // If the fromSquare contains no piece, it returns the original PiecePlacement
+    }
+    pieceMatrixCopy[fromSquare.rank - 1][fromSquare.file - 1] = null;
+    pieceMatrixCopy[toSquare.rank - 1][toSquare.file - 1] = piece;
+    return PiecePlacement.fromPieceMatrix(pieceMatrixCopy);
   }
 
   String get fenPosition {

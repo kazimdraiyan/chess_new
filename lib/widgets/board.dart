@@ -20,8 +20,58 @@ class _BoardState extends State<Board> {
 
   var isWhiteToMove = true;
   var isWhitePerspective = true;
+  Square? selectedSquare;
 
   var highlightedSquares = <Square>[];
+
+  void onTapSquare(Square tappedSquare) {
+    // final tappedPiece = boardManager.currentPiecePlacement.pieceAt(
+    //   tappedSquare,
+    // );
+
+    if (selectedSquare == null) {
+      if (isSelfPiece(tappedSquare)) {
+        // Selects after verifying tapped square has a piece of the color to move
+        setState(() {
+          selectSquare(tappedSquare);
+        });
+      }
+    } else {
+      setState(() {
+        if (tappedSquare == selectedSquare) {
+          unselectSquare();
+        } else if (isSelfPiece(tappedSquare)) {
+          // Self pieces never get highligted
+          selectSquare(tappedSquare);
+        } else if (highlightedSquares.contains(tappedSquare)) {
+          // If there are highlighted squares, a square must be in the selected state. So selectedSquare will not be null.
+          boardManager.movePiece(selectedSquare!, tappedSquare);
+          isWhitePerspective = !isWhitePerspective;
+          unselectSquare();
+        } else {
+          // Not highligted non-self squares
+          unselectSquare();
+        }
+      });
+    }
+  }
+
+  void selectSquare(Square square) {
+    selectedSquare = square;
+    highlightedSquares = boardManager.legalMoves(square);
+  }
+
+  void unselectSquare() {
+    setState(() {
+      selectedSquare = null;
+      highlightedSquares = [];
+    });
+  }
+
+  bool isSelfPiece(Square square) {
+    final piece = boardManager.currentPiecePlacement.pieceAt(square);
+    return piece != null && piece.isWhite == isWhitePerspective;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -57,18 +107,24 @@ class _BoardState extends State<Board> {
             final piece = boardManager.currentPiecePlacement.pieceAt(square);
 
             return GestureDetector(
-              onTap: () {
-                // print(boardManager.currentPiecePlacement.pieceAt(square));
-                setState(() {
-                  highlightedSquares = boardManager.legalMoves(square);
-                  // highlightedSquares =
-                  //     square.orthogonalSquares
-                  //         .expand(
-                  //           (singleDirectionSquares) => singleDirectionSquares,
-                  //         )
-                  //         .toList();
-                });
-              },
+              onTap: () => onTapSquare(square),
+              // () {
+              //   setState(() {
+              //     if (selectedSquare == null) {
+              //       selectedSquare = square;
+              //       highlightedSquares = boardManager.legalMoves(square);
+              //     } else {
+              //       if (square == selectedSquare) {
+              //         selectedSquare = null;
+              //         highlightedSquares = [];
+              //       } else if (highlightedSquares.contains(square)) {
+              //         boardManager.movePiece(selectedSquare!, square);
+              //         highlightedSquares = [];
+              //         selectedSquare = null;
+              //       }
+              //     }
+              //   });
+              // },
               child: Container(
                 color:
                     square.isDark

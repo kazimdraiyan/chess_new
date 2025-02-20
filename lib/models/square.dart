@@ -124,6 +124,8 @@ class Square {
       for (var rankStep = -1; rankStep <= 1; rankStep++) {
         final testingFile = file + fileStep;
         final testingRank = rank + rankStep;
+        if (fileStep == 0 && rankStep == 0) continue;
+
         if (Square.isFileRankValid(testingFile, testingRank)) {
           result.add(Square(testingFile, testingRank));
         }

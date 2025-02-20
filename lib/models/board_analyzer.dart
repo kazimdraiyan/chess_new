@@ -7,29 +7,38 @@ class BoardAnalyzer {
 
   const BoardAnalyzer(this._piecePlacement);
 
+  List<Square> attackedPieces(bool isWhitePerspective) {
+    return [];
+  }
+
   List<Square> legalMoves(Square square) {
+    final filteredMoves = this.filteredMoves(square);
+    // for (final filteredMove in filteredMoves) {}
+    return filteredMoves;
+  }
+
+  /// filteredMoves doesn't account for pinned pieces, so some moves might leave the king in check.
+  List<Square> filteredMoves(Square square) {
     final piece = _piecePlacement.pieceAt(square);
     if (piece == null) {
       return [];
     } else if (piece.pieceType == PieceType.rook) {
-      return _rookLegalMoves(square); // TODO: Also check if it's pinned or not
+      return _rookfilteredMoves(square);
     } else if (piece.pieceType == PieceType.bishop) {
-      return _bishopLegalMoves(square);
+      return _bishopfilteredMoves(square);
     } else if (piece.pieceType == PieceType.queen) {
-      return _queenLegalMoves(square);
+      return _queenfilteredMoves(square);
     } else if (piece.pieceType == PieceType.knight) {
-      return _knightLegalMoves(square);
+      return _knightfilteredMoves(square);
     } else if (piece.pieceType == PieceType.pawn) {
-      return _pawnLegalMoves(square);
-    } else if (piece.pieceType == PieceType.king) {
-      return _kingLegalMoves(square);
+      return _pawnfilteredMoves(square);
     } else {
-      // TODO: Implement other piece moves
-      return [];
+      // King
+      return _kingfilteredMoves(square);
     }
   }
 
-  List<Square> _rookLegalMoves(Square square) {
+  List<Square> _rookfilteredMoves(Square square) {
     final piece = _piecePlacement.pieceAt(square);
 
     final orthogonalSquares = square.orthogonalSquares;
@@ -38,7 +47,7 @@ class BoardAnalyzer {
     return traverseTillBlockage(orthogonalSquares, piece!.isWhite);
   }
 
-  List<Square> _bishopLegalMoves(Square square) {
+  List<Square> _bishopfilteredMoves(Square square) {
     final piece = _piecePlacement.pieceAt(square);
 
     final diagonalSquares = square.diagonalSquares;
@@ -47,7 +56,7 @@ class BoardAnalyzer {
     return traverseTillBlockage(diagonalSquares, piece!.isWhite);
   }
 
-  List<Square> _queenLegalMoves(Square square) {
+  List<Square> _queenfilteredMoves(Square square) {
     final piece = _piecePlacement.pieceAt(square);
 
     final orthogonalSquares = square.orthogonalSquares;
@@ -58,21 +67,21 @@ class BoardAnalyzer {
     return traverseTillBlockage(allDirectionalSquares, piece!.isWhite);
   }
 
-  List<Square> _knightLegalMoves(Square square) {
+  List<Square> _knightfilteredMoves(Square square) {
     final piece = _piecePlacement.pieceAt(square)!;
     final knightSquares = square.knightSquares;
 
     return filterBlockageByFriendlyPieces(knightSquares, piece.isWhite);
   }
 
-  List<Square> _kingLegalMoves(Square square) {
+  List<Square> _kingfilteredMoves(Square square) {
     final piece = _piecePlacement.pieceAt(square)!;
     final kingSquares = square.kingSquares;
 
     return filterBlockageByFriendlyPieces(kingSquares, piece.isWhite);
   }
 
-  List<Square> _pawnLegalMoves(Square square) {
+  List<Square> _pawnfilteredMoves(Square square) {
     final pawnSquares = <Square>[];
     final pawnCapturableSquares = <Square>[];
 
