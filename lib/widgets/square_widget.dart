@@ -42,14 +42,11 @@ class SquareWidget extends StatelessWidget {
               children: [
                 if (piece != null)
                   Opacity(
+                    // TODO: Remove this opacity
                     opacity: 1,
-                    child: SvgPicture.asset(
-                      Utils.iconSrcOf(
-                        piece!.pieceType,
-                        isWhite: piece!.isWhite,
-                      ), // TODO: Why ! needed?
-                    ),
+                    child: PieceIconWidget(piece: piece),
                   ),
+
                 if (isDotted) Center(child: Dot()),
                 if (isCircled) Center(child: Circle()),
                 // Center(
@@ -63,6 +60,22 @@ class SquareWidget extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+}
+
+class PieceIconWidget extends StatelessWidget {
+  const PieceIconWidget({super.key, required this.piece});
+
+  final Piece? piece;
+
+  @override
+  Widget build(BuildContext context) {
+    return SvgPicture.asset(
+      Utils.iconSrcOf(
+        piece!.pieceType,
+        isWhite: piece!.isWhite,
+      ), // TODO: Why ! needed?
     );
   }
 }

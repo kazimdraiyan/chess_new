@@ -18,12 +18,29 @@ class _GameWidgetState extends State<GameWidget> {
   var boardManager = BoardManager();
   Move? lastMove;
 
+  var isBeingDragged = false;
   var isWhiteToMove = true;
   var isWhitePerspective = true;
+  // Square? draggedOnSquare;
   Square? selectedSquare;
 
   var legalMoveSquares = <Square>[];
 
+  void setIsBeingDragged(bool isBeingDragged) {
+    // TODO: Should I wrap this with setState?
+    this.isBeingDragged = isBeingDragged;
+  }
+
+  // void setDraggedOnSquare(Square? square) {
+  //   setState(() {
+  //     draggedOnSquare = square;
+  //   });
+  // }
+
+  // TODO: Solve the dragging multiple pieces simultaneously problem.
+  // TODO: Add a circle on top of the square on which a piece is being dragged on.
+  // TODO: Optimize the dragging feature by calling setState only when and only where it's needed. We don't need to rebuild the whole GridView, if the change only affect a single square.
+  // TODO: Generalize the function names so that it can describe both tapping and dragging.
   void onTapSquare(Square tappedSquare) {
     if (selectedSquare == null) {
       if (isSelfPiece(tappedSquare)) {
@@ -123,11 +140,15 @@ class _GameWidgetState extends State<GameWidget> {
         ),
         BoardWidget(
           isWhitePerspective: isWhitePerspective,
+          isBeingDragged: isBeingDragged,
           boardManager: boardManager,
           selectedSquare: selectedSquare,
+          // draggedOnSquare: draggedOnSquare,
           lastMove: lastMove,
           legalMoveSquares: legalMoveSquares,
           onTapSquare: onTapSquare,
+          setIsBeingDragged: setIsBeingDragged,
+          // setDraggedOnSquare: setDraggedOnSquare,
         ),
         Padding(
           padding: const EdgeInsets.all(10),
