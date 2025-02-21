@@ -22,14 +22,18 @@ class BoardAnalyzer {
 
   List<Square> legalMoves(Square square) {
     final piece = _piecePlacement.pieceAt(square)!;
-    final selfKingSquare = _piecePlacement.kingSquare(piece.isWhite);
 
     final filteredMoves = this.filteredMoves(square);
+
+    print(filteredMoves);
 
     final result = <Square>[];
     for (final filteredMove in filteredMoves) {
       final testingBoardAnalyzer = BoardAnalyzer(
         _piecePlacement.movePiece(square, filteredMove),
+      );
+      final selfKingSquare = testingBoardAnalyzer._piecePlacement.kingSquare(
+        piece.isWhite,
       );
       if (!testingBoardAnalyzer
           .attackedSquares(piece.isWhite)
