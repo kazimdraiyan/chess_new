@@ -17,6 +17,12 @@ class BoardManager {
     ).attackedSquares(isWhitePerspective);
   }
 
+  bool isOccupiedByEnemyPiece(Square square, bool isWhitePerspective) {
+    return BoardAnalyzer(
+      currentPiecePlacement,
+    ).isOccupiedByEnemyPiece(square, isWhitePerspective);
+  }
+
   void movePiece(Move move) {
     final piecePlacementAfterMoving = currentPiecePlacement.movePiece(move);
     if (piecePlacementAfterMoving != currentPiecePlacement) {

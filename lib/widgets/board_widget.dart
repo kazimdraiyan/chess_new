@@ -8,7 +8,7 @@ class BoardWidget extends StatelessWidget {
   final bool isWhitePerspective;
   final BoardManager boardManager;
   final Square? selectedSquare;
-  final List<Square> dottedSquares;
+  final List<Square> legalMoveSquares;
   final Move? lastMove;
   final void Function(Square) onTapSquare;
 
@@ -17,7 +17,7 @@ class BoardWidget extends StatelessWidget {
     required this.isWhitePerspective,
     required this.boardManager,
     required this.selectedSquare,
-    required this.dottedSquares,
+    required this.legalMoveSquares,
     required this.lastMove,
     required this.onTapSquare,
   });
@@ -44,11 +44,17 @@ class BoardWidget extends StatelessWidget {
         final doesBelongToLastMove =
             square == lastMove?.from || square == lastMove?.to;
 
+        final isOccupiedByEnemyPiece = boardManager.isOccupiedByEnemyPiece(
+          square,
+          isWhitePerspective,
+        );
+
         final Color? highlightColor;
         if (isSelected || doesBelongToLastMove) {
-          highlightColor = Color(0x88fff35f);
+          highlightColor = Colors.yellow.withAlpha(100);
         } else if (isAttacked) {
-          highlightColor = null; // Color(0x44AA0000);
+          // TODO: Remove this
+          highlightColor = null; // Colors.red.withAlpha(150);
         } else {
           highlightColor = null;
         }
@@ -57,7 +63,9 @@ class BoardWidget extends StatelessWidget {
           square,
           piece: piece,
           highlightColor: highlightColor,
-          isDotted: dottedSquares.contains(square),
+          isDotted: legalMoveSquares.contains(square) && piece == null,
+          isCircled:
+              legalMoveSquares.contains(square) && isOccupiedByEnemyPiece,
           onTapSquare: onTapSquare,
         );
       },

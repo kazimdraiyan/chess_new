@@ -22,7 +22,7 @@ class _GameWidgetState extends State<GameWidget> {
   var isWhitePerspective = true;
   Square? selectedSquare;
 
-  var dottedSquares = <Square>[];
+  var legalMoveSquares = <Square>[];
 
   void onTapSquare(Square tappedSquare) {
     if (selectedSquare == null) {
@@ -39,7 +39,7 @@ class _GameWidgetState extends State<GameWidget> {
         } else if (isSelfPiece(tappedSquare)) {
           // Self pieces never get highligted
           selectSquare(tappedSquare);
-        } else if (dottedSquares.contains(tappedSquare)) {
+        } else if (legalMoveSquares.contains(tappedSquare)) {
           // If there are highlighted squares, a square must be in the selected state. So selectedSquare will not be null.
           boardManager.movePiece(Move(selectedSquare!, tappedSquare));
           lastMove = boardManager.lastMove;
@@ -55,13 +55,13 @@ class _GameWidgetState extends State<GameWidget> {
 
   void selectSquare(Square square) {
     selectedSquare = square;
-    dottedSquares = boardManager.legalMoves(square);
+    legalMoveSquares = boardManager.legalMoves(square);
   }
 
   void unselectSquare() {
     setState(() {
       selectedSquare = null;
-      dottedSquares = [];
+      legalMoveSquares = [];
     });
   }
 
@@ -77,7 +77,7 @@ class _GameWidgetState extends State<GameWidget> {
       isWhiteToMove = true;
       isWhitePerspective = true;
       selectedSquare = null;
-      dottedSquares = [];
+      legalMoveSquares = [];
     });
   }
 
@@ -126,7 +126,7 @@ class _GameWidgetState extends State<GameWidget> {
           boardManager: boardManager,
           selectedSquare: selectedSquare,
           lastMove: lastMove,
-          dottedSquares: dottedSquares,
+          legalMoveSquares: legalMoveSquares,
           onTapSquare: onTapSquare,
         ),
         Padding(

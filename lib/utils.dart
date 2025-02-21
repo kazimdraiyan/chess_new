@@ -1,6 +1,8 @@
 import 'dart:collection';
 
 import 'package:chess_new/models/piece.dart';
+import 'package:flutter/material.dart';
+import 'package:material_color_utilities/material_color_utilities.dart';
 
 class Utils {
   static const fenInitialOf = {
@@ -18,5 +20,10 @@ class Utils {
 
   static String iconSrcOf(PieceType pieceType, {bool isWhite = true}) {
     return 'assets/pieces_icon/${fenInitialOf[pieceType]!}${isWhite ? 'l' : 'd'}.svg';
+  }
+
+  static TonalPalette tonalPaletteOf(Color color) {
+    final hct = Hct.fromInt(color.toARGB32());
+    return TonalPalette.of(hct.hue, hct.chroma);
   }
 }
