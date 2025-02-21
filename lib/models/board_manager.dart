@@ -6,8 +6,13 @@ class BoardManager {
   var currentPiecePlacement = PiecePlacement.starting();
 
   List<Square> legalMoves(Square square) {
-    final boardAnalyzer = BoardAnalyzer(currentPiecePlacement);
-    return boardAnalyzer.legalMoves(square);
+    return BoardAnalyzer(currentPiecePlacement).legalMoves(square);
+  }
+
+  List<Square> attackedSquares(bool isWhitePerspective) {
+    return BoardAnalyzer(
+      currentPiecePlacement,
+    ).attackedSquares(isWhitePerspective);
   }
 
   void movePiece(Square fromSquare, Square toSquare) {
@@ -15,5 +20,7 @@ class BoardManager {
       fromSquare,
       toSquare,
     );
+    // TODO: Save captured pieces and calculater advantage
+    // TODO: Preserve move history
   }
 }

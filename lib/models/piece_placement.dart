@@ -3,8 +3,8 @@ import 'package:chess_new/models/square.dart';
 import 'package:chess_new/utils.dart';
 
 class PiecePlacement {
-  late final List<List<Piece?>>
-  pieceMatrix; // rank 1 (file 1-8), rank 2 (file 1-8), ...
+  /// Rank 1 (File 1-8), Rank 2 (File 1-8), ...
+  late final List<List<Piece?>> pieceMatrix;
 
   PiecePlacement.fromPieceMatrix(this.pieceMatrix);
 
@@ -29,7 +29,6 @@ class PiecePlacement {
       }
       pieceMatrix.add(rank);
     }
-    print(pieceMatrix);
   }
 
   factory PiecePlacement.starting() {
@@ -84,6 +83,32 @@ class PiecePlacement {
   Piece? pieceAt(Square square) {
     final piece = pieceMatrix[square.rank - 1][square.file - 1];
     return piece;
+  }
+
+  Square kingSquare(bool isWhite) {
+    for (var rank = 1; rank <= 8; rank++) {
+      for (var file = 1; file <= 8; file++) {
+        final square = Square(file, rank);
+        if (pieceAt(square)?.pieceType == PieceType.king &&
+            pieceAt(square)?.isWhite == isWhite) {
+          return Square(file, rank);
+        }
+      }
+    }
+    throw Exception('King is not on the board');
+  }
+
+  List<Square> certainColorPieceContainingSquares(bool isColorWhite) {
+    final result = <Square>[];
+    for (var rank = 1; rank <= 8; rank++) {
+      for (var file = 1; file <= 8; file++) {
+        final square = Square(file, rank);
+        if (pieceAt(square)?.isWhite == isColorWhite) {
+          result.add(square);
+        }
+      }
+    }
+    return result;
   }
 
   bool isEmpty(Square square) {

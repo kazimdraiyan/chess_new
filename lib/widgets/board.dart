@@ -108,64 +108,62 @@ class _BoardState extends State<Board> {
 
             return GestureDetector(
               onTap: () => onTapSquare(square),
-              // () {
-              //   setState(() {
-              //     if (selectedSquare == null) {
-              //       selectedSquare = square;
-              //       highlightedSquares = boardManager.legalMoves(square);
-              //     } else {
-              //       if (square == selectedSquare) {
-              //         selectedSquare = null;
-              //         highlightedSquares = [];
-              //       } else if (highlightedSquares.contains(square)) {
-              //         boardManager.movePiece(selectedSquare!, square);
-              //         highlightedSquares = [];
-              //         selectedSquare = null;
-              //       }
-              //     }
-              //   });
-              // },
               child: Container(
                 color:
                     square.isDark
                         ? Color(Constants.darkSquareColor)
                         : Color(Constants.lightSquareColor),
-                child: Center(
-                  child: Stack(
-                    children: [
-                      if (piece != null)
-                        Opacity(
-                          opacity: 0.5,
-                          child: SvgPicture.asset(
-                            Utils.iconSrcOf(
-                              piece.pieceType,
-                              isWhite: piece.isWhite,
+                child: Container(
+                  // TODO: Remove this testing Container
+                  color:
+                      boardManager
+                              .attackedSquares(isWhitePerspective)
+                              .contains(square)
+                          ? Color(0x55FF0000)
+                          : null,
+                  child: Center(
+                    child: Stack(
+                      children: [
+                        if (piece != null)
+                          Opacity(
+                            opacity: 0.5,
+                            child: SvgPicture.asset(
+                              Utils.iconSrcOf(
+                                piece.pieceType,
+                                isWhite: piece.isWhite,
+                              ),
                             ),
                           ),
-                        ),
-                      if (highlightedSquares.contains(square))
-                        Center(
-                          child: Container(
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              color: Color.fromARGB(
-                                100,
-                                255,
-                                50,
-                                50,
-                              ), // TODO: Take this into Constants
+                        if (highlightedSquares.contains(square))
+                          Center(
+                            child: Container(
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: Color.fromARGB(
+                                  100,
+                                  50,
+                                  50,
+                                  50,
+                                ), // TODO: Take this into Constants
+                              ),
+                              width: 18,
+                              height: 18,
                             ),
-                            width: 18,
-                            height: 18,
                           ),
-                        ),
-                      Center(child: Text(square.algebraicNotation)),
-                    ],
+                        Center(child: Text(square.algebraicNotation)),
+                      ],
+                    ),
                   ),
                 ),
               ),
             );
           },
+        ),
+        ElevatedButton(
+          onPressed: () {
+            // Testing
+          },
+          child: Text('Click me'),
         ),
       ],
     );

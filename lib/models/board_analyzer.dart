@@ -7,14 +7,67 @@ class BoardAnalyzer {
 
   const BoardAnalyzer(this._piecePlacement);
 
-  List<Square> attackedPieces(bool isWhitePerspective) {
-    return [];
+  List<Square> attackedSquares(bool isWhitePerspective) {
+    final opponentPieceContainingSquares = _piecePlacement
+        .certainColorPieceContainingSquares(!isWhitePerspective);
+
+    final result = <Square>[];
+    for (final opponentPieceContainingSquare
+        in opponentPieceContainingSquares) {
+      result.addAll(attackSquares(opponentPieceContainingSquare));
+    }
+
+    return result;
   }
 
   List<Square> legalMoves(Square square) {
+    final piece = _piecePlacement.pieceAt(square)!;
+    final selfKingSquare = _piecePlacement.kingSquare(piece.isWhite);
+
     final filteredMoves = this.filteredMoves(square);
-    // for (final filteredMove in filteredMoves) {}
+
+    final result = [];
+    for (final filteredMove in filteredMoves) {
+      final testingBoardAnalyzer = BoardAnalyzer(
+        _piecePlacement.movePiece(square, filteredMove),
+      );
+      if (!testingBoardAnalyzer
+          .attackedSquares(piece.isWhite)
+          .contains(selfKingSquare)) {
+        // King would not be in check
+        result.add(filteredMove);
+      }
+    }
     return filteredMoves;
+  }
+
+  // Attack squares should include blocking friendly pieces
+  List<Square> attackSquares(Square square) {
+    final piece = _piecePlacement.pieceAt(square);
+    if (piece == null) {
+      return [];
+    } else if (piece.pieceType == PieceType.rook) {
+      return _rookfilteredMoves(
+        square,
+        shouldIncludeBlockingFriendlyPiece: true,
+      );
+    } else if (piece.pieceType == PieceType.bishop) {
+      return _bishopfilteredMoves(
+        square,
+        shouldIncludeBlockingFriendlyPiece: true,
+      );
+    } else if (piece.pieceType == PieceType.queen) {
+      return _queenfilteredMoves(
+        square,
+        shouldIncludeBlockingFriendlyPiece: true,
+      );
+    } else if (piece.pieceType == PieceType.knight) {
+      return square.knightSquares;
+    } else if (piece.pieceType == PieceType.king) {
+      return square.kingSquares;
+    } else {
+      return _pawnAttackSquares(square);
+    }
   }
 
   /// filteredMoves doesn't account for pinned pieces, so some moves might leave the king in check.
@@ -38,33 +91,51 @@ class BoardAnalyzer {
     }
   }
 
-  List<Square> _rookfilteredMoves(Square square) {
+  List<Square> _rookfilteredMoves(
+    Square square, {
+    shouldIncludeBlockingFriendlyPiece = false,
+  }) {
     final piece = _piecePlacement.pieceAt(square);
 
     final orthogonalSquares = square.orthogonalSquares;
-    print(orthogonalSquares);
 
-    return traverseTillBlockage(orthogonalSquares, piece!.isWhite);
+    return traverseTillBlockage(
+      orthogonalSquares,
+      piece!.isWhite,
+      shouldIncludeBlockingFriendlyPiece: shouldIncludeBlockingFriendlyPiece,
+    );
   }
 
-  List<Square> _bishopfilteredMoves(Square square) {
+  List<Square> _bishopfilteredMoves(
+    Square square, {
+    shouldIncludeBlockingFriendlyPiece = false,
+  }) {
     final piece = _piecePlacement.pieceAt(square);
 
     final diagonalSquares = square.diagonalSquares;
-    print(diagonalSquares);
 
-    return traverseTillBlockage(diagonalSquares, piece!.isWhite);
+    return traverseTillBlockage(
+      diagonalSquares,
+      piece!.isWhite,
+      shouldIncludeBlockingFriendlyPiece: shouldIncludeBlockingFriendlyPiece,
+    );
   }
 
-  List<Square> _queenfilteredMoves(Square square) {
+  List<Square> _queenfilteredMoves(
+    Square square, {
+    shouldIncludeBlockingFriendlyPiece = false,
+  }) {
     final piece = _piecePlacement.pieceAt(square);
 
     final orthogonalSquares = square.orthogonalSquares;
     final diagonalSquares = square.diagonalSquares;
     final allDirectionalSquares = [...orthogonalSquares, ...diagonalSquares];
-    print(allDirectionalSquares);
 
-    return traverseTillBlockage(allDirectionalSquares, piece!.isWhite);
+    return traverseTillBlockage(
+      allDirectionalSquares,
+      piece!.isWhite,
+      shouldIncludeBlockingFriendlyPiece: shouldIncludeBlockingFriendlyPiece,
+    );
   }
 
   List<Square> _knightfilteredMoves(Square square) {
@@ -98,17 +169,8 @@ class BoardAnalyzer {
       pawnSquares.add(Square(square.file, square.rank + rankStep * 2));
     }
 
-    // TODO: Extract the following part to another method which returns pawnAttackSquares
-    // 1-step diagonal to the front
-    final testingRank = square.rank + rankStep;
-    for (var fileStep = -1; fileStep <= 1; fileStep++) {
-      if (fileStep == 0) continue;
-
-      final testingFile = square.file + fileStep;
-      if (testingFile < 1 || testingFile > 8) continue;
-
-      final testingSquare = Square(testingFile, testingRank);
-      print(testingSquare);
+    // 1-step diagonal to the front if there's enemy pieces
+    for (final testingSquare in _pawnAttackSquares(square)) {
       if (isOccupiedByEnemyPiece(testingSquare, piece.isWhite)) {
         pawnCapturableSquares.add(testingSquare);
       }
@@ -118,10 +180,27 @@ class BoardAnalyzer {
       ...singleDirectionTraverseTillBlockage(
         pawnSquares,
         piece.isWhite,
-        isPawn: true,
+        shouldIncludeBlockingEnemyPiece: false,
       ),
       ...pawnCapturableSquares,
     ];
+  }
+
+  List<Square> _pawnAttackSquares(Square square) {
+    final result = <Square>[];
+    final rankStep = _piecePlacement.pieceAt(square)!.isWhite ? 1 : -1;
+
+    final testingRank = square.rank + rankStep;
+    for (var fileStep = -1; fileStep <= 1; fileStep++) {
+      if (fileStep == 0) continue;
+
+      final testingFile = square.file + fileStep;
+      if (testingFile < 1 || testingFile > 8) continue;
+
+      final testingSquare = Square(testingFile, testingRank);
+      result.add(testingSquare);
+    }
+    return result;
   }
 
   List<Square> filterBlockageByFriendlyPieces(
@@ -139,8 +218,9 @@ class BoardAnalyzer {
 
   List<Square> traverseTillBlockage(
     List<List<Square>> directionalSquares,
-    bool isOriginalPieceWhite,
-  ) {
+    bool isOriginalPieceWhite, {
+    shouldIncludeBlockingFriendlyPiece = false,
+  }) {
     final result = <Square>[];
 
     for (final singleDirectionSquares in directionalSquares) {
@@ -148,6 +228,8 @@ class BoardAnalyzer {
         singleDirectionTraverseTillBlockage(
           singleDirectionSquares,
           isOriginalPieceWhite,
+          shouldIncludeBlockingFriendlyPiece:
+              shouldIncludeBlockingFriendlyPiece,
         ),
       );
     }
@@ -157,6 +239,8 @@ class BoardAnalyzer {
   List<Square> singleDirectionTraverseTillBlockage(
     List<Square> singleDirectionSquares,
     bool isOriginalPieceWhite, {
+    bool shouldIncludeBlockingFriendlyPiece = false,
+    bool shouldIncludeBlockingEnemyPiece = true,
     bool isPawn = false,
   }) {
     final result = <Square>[];
@@ -165,12 +249,13 @@ class BoardAnalyzer {
       if (_piecePlacement.isEmpty(testingSquare)) {
         result.add(testingSquare);
       } else {
-        if (isOccupiedByFriendlyPiece(testingSquare, isOriginalPieceWhite)) {
-          break; // Blocked by a friendly piece, so continue to traverse on the next direction
-        } else {
-          if (!isPawn) result.add(testingSquare);
-          break; // Blocked by a enemy piece, so include the square and continue to traverse on the next direction
+        if ((isOccupiedByFriendlyPiece(testingSquare, isOriginalPieceWhite) &&
+                shouldIncludeBlockingFriendlyPiece) ||
+            (isOccupiedByEnemyPiece(testingSquare, isOriginalPieceWhite) &&
+                shouldIncludeBlockingEnemyPiece)) {
+          result.add(testingSquare);
         }
+        break;
       }
     }
 

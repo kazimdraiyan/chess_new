@@ -27,7 +27,7 @@ class Piece {
         promotionOptions.contains(targetPieceType)) {
       _pieceType = targetPieceType;
     } else {
-      print("Invalid promotion");
+      throw Exception("Invalid promotion");
     }
   }
 

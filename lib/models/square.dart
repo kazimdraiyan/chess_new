@@ -32,8 +32,6 @@ class Square {
       throw ArgumentError('Rank must be a number between 1 and 8');
     }
 
-    print('$file $rank');
-
     return Square(file, rank);
   }
 
