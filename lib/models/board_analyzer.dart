@@ -26,7 +26,7 @@ class BoardAnalyzer {
 
     final filteredMoves = this.filteredMoves(square);
 
-    final result = [];
+    final result = <Square>[];
     for (final filteredMove in filteredMoves) {
       final testingBoardAnalyzer = BoardAnalyzer(
         _piecePlacement.movePiece(square, filteredMove),
@@ -38,7 +38,7 @@ class BoardAnalyzer {
         result.add(filteredMove);
       }
     }
-    return filteredMoves;
+    return result;
   }
 
   // Attack squares should include blocking friendly pieces
