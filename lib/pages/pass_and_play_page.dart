@@ -1,4 +1,4 @@
-import 'package:chess_new/widgets/board.dart';
+import 'package:chess_new/widgets/game_widget.dart';
 import 'package:flutter/material.dart';
 
 class PassAndPlayPage extends StatelessWidget {
@@ -7,8 +7,8 @@ class PassAndPlayPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Shut up')),
-      body: Board(),
+      appBar: AppBar(title: Text('Pass and Play')),
+      body: GameWidget(),
       resizeToAvoidBottomInset: false,
     );
   }

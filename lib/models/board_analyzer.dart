@@ -1,3 +1,4 @@
+import 'package:chess_new/models/move.dart';
 import 'package:chess_new/models/piece.dart';
 import 'package:chess_new/models/piece_placement.dart';
 import 'package:chess_new/models/square.dart';
@@ -25,12 +26,10 @@ class BoardAnalyzer {
 
     final filteredMoves = this.filteredMoves(square);
 
-    print(filteredMoves);
-
     final result = <Square>[];
     for (final filteredMove in filteredMoves) {
       final testingBoardAnalyzer = BoardAnalyzer(
-        _piecePlacement.movePiece(square, filteredMove),
+        _piecePlacement.movePiece(Move(square, filteredMove)),
       );
       final selfKingSquare = testingBoardAnalyzer._piecePlacement.kingSquare(
         piece.isWhite,

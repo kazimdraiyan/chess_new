@@ -1,3 +1,4 @@
+import 'package:chess_new/models/move.dart';
 import 'package:chess_new/models/piece.dart';
 import 'package:chess_new/models/square.dart';
 import 'package:chess_new/utils.dart';
@@ -37,16 +38,16 @@ class PiecePlacement {
     );
   }
 
-  PiecePlacement movePiece(Square fromSquare, Square toSquare) {
+  PiecePlacement movePiece(Move move) {
     final pieceMatrixCopy = [
       for (final rank in pieceMatrix) [...rank],
     ];
-    final piece = pieceAt(fromSquare);
+    final piece = pieceAt(move.from);
     if (piece == null) {
       return this; // If the fromSquare contains no piece, it returns the original PiecePlacement
     }
-    pieceMatrixCopy[fromSquare.rank - 1][fromSquare.file - 1] = null;
-    pieceMatrixCopy[toSquare.rank - 1][toSquare.file - 1] = piece;
+    pieceMatrixCopy[move.from.rank - 1][move.from.file - 1] = null;
+    pieceMatrixCopy[move.to.rank - 1][move.to.file - 1] = piece;
     return PiecePlacement.fromPieceMatrix(pieceMatrixCopy);
   }
 
