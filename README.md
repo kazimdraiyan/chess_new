@@ -1,16 +1,34 @@
-# chess_new
+# Flutter Chess Project
 
-A new Flutter project.
+## Features
+- **Two-player Mode** *(under development)*: Play with a friend on the same device.
+- **Online Mode** *(planned)*:
+    + With a friend,
+    + With a stranger with similar expertise.
+- **Local Network Mode** *(planned)*: Play with a friend on two different devices connected via Wi-Fi or Bluetooth.
+- **AI Opponent Mode** *(planned)*: Play with an AI with different difficulty levels.
 
 ## Getting Started
+### Prerequisites
+- Flutter SDK: [Install Flutter](https://flutter.dev/docs/get-started/install)
 
-This project is a starting point for a Flutter application.
+### Installation
+1. Clone the repository:
+    ```bash
+    git clone https://github.com/kazimdraiyan/chess_new.git
+    ```
+2. Navigate to the project directory:
+    ```bash
+    cd chess_new
+    ```
+3. Install dependencies:
+    ```bash
+    flutter pub get
+    ```
 
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+### Running the App:
+1. Connect a device or start an emulator.
+2. Run the app:
+    ```bash
+    flutter run
+    ```
