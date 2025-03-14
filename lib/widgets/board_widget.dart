@@ -4,31 +4,92 @@ import 'package:chess_new/models/square.dart';
 import 'package:chess_new/widgets/square_widget.dart';
 import 'package:flutter/material.dart';
 
-class BoardWidget extends StatelessWidget {
+class BoardWidget extends StatefulWidget {
   final bool isWhitePerspective;
-  final bool isBeingDragged;
   final BoardManager boardManager;
-  final Square? selectedSquare;
-  // final Square? draggedOnSquare;
-  final List<Square> legalMoveSquares;
-  final Move? lastMove;
-  final void Function(Square) onTapSquare;
-  final void Function(bool) setIsBeingDragged;
-  // final void Function(Square?) setDraggedOnSquare;
+  final void Function() toggleWhitePerspective;
 
   const BoardWidget({
     super.key,
     required this.isWhitePerspective,
-    required this.isBeingDragged,
     required this.boardManager,
-    required this.selectedSquare,
-    // required this.draggedOnSquare,
-    required this.legalMoveSquares,
-    required this.lastMove,
-    required this.onTapSquare,
-    required this.setIsBeingDragged,
-    // required this.setDraggedOnSquare,
+    required this.toggleWhitePerspective,
   });
+
+  @override
+  State<BoardWidget> createState() => _BoardWidgetState();
+}
+
+class _BoardWidgetState extends State<BoardWidget> {
+  Square? selectedSquare;
+
+  var isBeingDragged = false;
+
+  Move? lastMove;
+  var legalMoveSquares = <Square>[];
+
+  @override
+  void initState() {
+    print('BoardWidget initState');
+    super.initState();
+  }
+
+  void setIsBeingDragged(bool isBeingDragged) {
+    // TODO: Should I wrap this with setState?
+    this.isBeingDragged = isBeingDragged;
+  }
+
+  void onTapSquare(Square tappedSquare) {
+    if (selectedSquare == null) {
+      if (isSelfPiece(tappedSquare)) {
+        // Selects after verifying tapped square has a piece of the color to move
+        setState(() {
+          selectSquare(tappedSquare);
+        });
+      }
+    } else {
+      if (tappedSquare == selectedSquare) {
+        setState(() {
+          unselectSquare();
+        });
+      } else if (isSelfPiece(tappedSquare)) {
+        // Self pieces never get highligted
+        setState(() {
+          selectSquare(tappedSquare);
+        });
+      } else if (legalMoveSquares.contains(tappedSquare)) {
+        // If there are highlighted squares, a square must be in the selected state. So selectedSquare will not be null.
+        // No need to setState here, because widget.toggleWhitePerspective will call setState in the GameWidget.
+        widget.boardManager.movePiece(Move(selectedSquare!, tappedSquare));
+        lastMove = widget.boardManager.lastMove;
+        unselectSquare();
+        widget.toggleWhitePerspective();
+      } else {
+        // Not highligted non-self squares
+        setState(() {
+          unselectSquare();
+        });
+      }
+    }
+  }
+
+  void selectSquare(Square square) {
+    selectedSquare = square;
+    legalMoveSquares = widget.boardManager.legalMoves(square);
+  }
+
+  void unselectSquare() {
+    selectedSquare = null;
+    legalMoveSquares = [];
+  }
+
+  bool isSelfPiece(Square square) {
+    final piece = widget.boardManager.currentPiecePlacement.pieceAt(square);
+    return piece != null && piece.isWhite == widget.isWhitePerspective;
+  }
+
+  // TODO: Solve the dragging multiple pieces simultaneously problem.
+  // TODO: Add a circle on top of the square on which a piece is being dragged on.
 
   @override
   Widget build(BuildContext context) {
@@ -41,21 +102,19 @@ class BoardWidget extends StatelessWidget {
       shrinkWrap: true,
       itemCount: 64,
       itemBuilder: (context, i) {
-        final id = isWhitePerspective ? i : 63 - i;
+        final id = widget.isWhitePerspective ? i : 63 - i;
         final square = Square.fromId(id);
-        final piece = boardManager.currentPiecePlacement.pieceAt(square);
+        final piece = widget.boardManager.currentPiecePlacement.pieceAt(square);
 
-        final isAttacked = boardManager
-            .attackedSquares(isWhitePerspective)
+        final isAttacked = widget.boardManager
+            .attackedSquares(widget.isWhitePerspective)
             .contains(square);
         final isSelected = square == selectedSquare;
         final doesBelongToLastMove =
             square == lastMove?.from || square == lastMove?.to;
 
-        final isOccupiedByEnemyPiece = boardManager.isOccupiedByEnemyPiece(
-          square,
-          isWhitePerspective,
-        );
+        final isOccupiedByEnemyPiece = widget.boardManager
+            .isOccupiedByEnemyPiece(square, widget.isWhitePerspective);
 
         final Color? highlightColor;
         if (isSelected || doesBelongToLastMove) {
