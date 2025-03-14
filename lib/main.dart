@@ -1,4 +1,9 @@
+import 'package:chess_new/pages/home_page.dart';
 import 'package:chess_new/pages/pass_and_play_page.dart';
+import 'package:chess_new/pages/play_a_bot_page.dart';
+import 'package:chess_new/pages/play_a_friend_page.dart';
+import 'package:chess_new/pages/play_a_stranger_page.dart';
+import 'package:chess_new/pages/play_local_page.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -13,11 +18,18 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Chess',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.pink),
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepOrange),
         useMaterial3: true,
       ),
-      home: const PassAndPlayPage(),
+      home: const HomePage(),
       debugShowCheckedModeBanner: false,
+      routes: {
+        PlayAStrangerPage.route: (context) => const PlayAStrangerPage(),
+        PlayAFriendPage.route: (context) => const PlayAFriendPage(),
+        PlayABotPage.route: (context) => const PlayABotPage(),
+        PlayLocalPage.route: (context) => const PlayLocalPage(),
+        PassAndPlayPage.route: (context) => const PassAndPlayPage(),
+      },
     );
   }
 }
