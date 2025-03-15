@@ -7,13 +7,13 @@ import 'package:flutter/material.dart';
 class BoardWidget extends StatefulWidget {
   final bool isWhitePerspective;
   final BoardManager boardManager;
-  final void Function() toggleWhitePerspective;
+  final void Function() updateGameWidgetAfterMakingMove;
 
   const BoardWidget({
     super.key,
     required this.isWhitePerspective,
     required this.boardManager,
-    required this.toggleWhitePerspective,
+    required this.updateGameWidgetAfterMakingMove,
   });
 
   @override
@@ -63,7 +63,7 @@ class _BoardWidgetState extends State<BoardWidget> {
         widget.boardManager.movePiece(Move(selectedSquare!, tappedSquare));
         lastMove = widget.boardManager.lastMove;
         unselectSquare();
-        widget.toggleWhitePerspective();
+        widget.updateGameWidgetAfterMakingMove();
       } else {
         // Not highligted non-self squares
         setState(() {

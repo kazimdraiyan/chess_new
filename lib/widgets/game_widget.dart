@@ -1,6 +1,7 @@
 import 'package:chess_new/models/board_manager.dart';
 import 'package:chess_new/models/piece_placement.dart';
 import 'package:chess_new/widgets/board_widget.dart';
+import 'package:chess_new/widgets/move_history_widget.dart';
 import 'package:flutter/material.dart';
 
 class GameWidget extends StatefulWidget {
@@ -12,6 +13,7 @@ class GameWidget extends StatefulWidget {
 
 class _GameWidgetState extends State<GameWidget> {
   final textEditingController = TextEditingController();
+  final moveHistoryScrollController = ScrollController();
 
   var boardWidgetKeyValue =
       false; // This is a dummy value. It doesn't matter what it is. It's just to force the BoardWidget to reinitialize.
@@ -51,47 +53,64 @@ class _GameWidgetState extends State<GameWidget> {
     boardWidgetKeyValue = !boardWidgetKeyValue;
   }
 
-  void toggleWhitePerspective() {
+  void updateGameWidgetAfterMakingMove() {
     setState(() {
       isWhitePerspective = !isWhitePerspective;
+
+      // TODO: Learn how does this work.
+      // This ensures that the new move chip is added to the move history ListView before scrolling to the end.
+      WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+        moveHistoryScrollController.animateTo(
+          moveHistoryScrollController.position.maxScrollExtent,
+          duration: Duration(milliseconds: 300),
+          curve: Curves.easeInOut,
+        );
+      });
     });
   }
 
   @override
   Widget build(BuildContext context) {
     return Column(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Padding(
-          padding: const EdgeInsets.all(10),
-          child: TextField(
-            controller: textEditingController,
-            decoration: InputDecoration(
-              hintText: "Set FEN",
-              border: OutlineInputBorder(),
-            ),
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.fromLTRB(10, 0, 10, 10),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              OutlinedButton(
-                onPressed: resetToStartingPosition,
-                child: Text('Starting'),
-              ),
-              OutlinedButton(onPressed: setFen, child: Text('Set')),
-            ],
-          ),
+        // Padding(
+        //   padding: const EdgeInsets.symmetric(horizontal: 10),
+        //   child: TextField(
+        //     controller: textEditingController,
+        //     decoration: InputDecoration(
+        //       hintText: "Set FEN",
+        //       border: OutlineInputBorder(),
+        //     ),
+        //   ),
+        // ),
+        // SizedBox(height: 10),
+        // Padding(
+        //   padding: const EdgeInsets.symmetric(horizontal: 10),
+        //   child: Row(
+        //     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        //     children: [
+        //       OutlinedButton(
+        //         onPressed: resetToStartingPosition,
+        //         child: Text('Starting'),
+        //       ),
+        //       OutlinedButton(onPressed: setFen, child: Text('Set')),
+        //     ],
+        //   ),
+        // ),
+        // SizedBox(height: 10),
+        MoveHistoryWidget(
+          moveHistory: boardManager.moveHistory,
+          scrollController: moveHistoryScrollController,
         ),
         BoardWidget(
           isWhitePerspective: isWhitePerspective,
           boardManager: boardManager,
-          toggleWhitePerspective: toggleWhitePerspective,
+          updateGameWidgetAfterMakingMove: updateGameWidgetAfterMakingMove,
           key: ValueKey(boardWidgetKeyValue),
         ),
         Padding(
-          padding: const EdgeInsets.all(10),
+          padding: const EdgeInsets.symmetric(horizontal: 10),
           child: OutlinedButton(
             onPressed: () {
               print('Test');

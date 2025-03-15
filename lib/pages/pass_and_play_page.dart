@@ -10,8 +10,9 @@ class PassAndPlayPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text('Pass and Play')),
+      backgroundColor: Theme.of(context).colorScheme.surfaceContainer,
       body: GameWidget(),
-      resizeToAvoidBottomInset: false,
+      resizeToAvoidBottomInset: false, // TODO: What does it do?
     );
   }
 }
