@@ -49,41 +49,77 @@ class BoardManager {
   }
 
   void movePiece(Square from, Square to) {
+    // TODO: Clean this mess up by splitting the method into smaller methods
     final piece = currentPiecePlacement.pieceAt(from)!;
 
-    final piecePlacementAfterMoving = currentPiecePlacement.movePiece(
-      Move(from, to, piece: piece),
-    );
+    if (piece.pieceType == PieceType.king &&
+        from.file == 5 &&
+        (to.file == 3 || to.file == 7)) {
+      // Castling move
+      const kingToRookFromRookTo = [
+        [7, 8, 6], // King side
+        [3, 1, 4], // Queen side
+      ]; // (File)
 
-    final testingBoardAnalyzer = BoardAnalyzer(piecePlacementAfterMoving);
+      final piecePlacementAfterMovingKing = currentPiecePlacement.movePiece(
+        Move(from, to, piece: piece),
+      );
 
-    final move = Move(
-      from,
-      to,
-      piece: piece,
-      capturesPiece: currentPiecePlacement.pieceAt(to) != null,
-      causesCheck: testingBoardAnalyzer.isKingInCheck(!piece.isWhite),
-    );
+      final rookFromRookTo = kingToRookFromRookTo.firstWhere((element) {
+        return element[0] == to.file;
+      });
+      final piecePlacementAfterMovingRook = piecePlacementAfterMovingKing
+          .movePiece(
+            Move(
+              Square(rookFromRookTo[1], from.rank),
+              Square(rookFromRookTo[2], from.rank),
+              piece: Piece(pieceType: PieceType.rook),
+            ),
+          );
+      currentPiecePlacement = piecePlacementAfterMovingRook;
+      moveHistory.add(
+        Move(
+          from,
+          Square(rookFromRookTo[1], from.rank),
+          piece: piece,
+          isKingSideCastlingMove: to.file == 7,
+        ),
+      ); // TODO: This move's from and to is used for highlighting only. It doesn't represent the actual from and to. Implement a better way to represent and highlight castling moves.
+    } else {
+      final piecePlacementAfterMoving = currentPiecePlacement.movePiece(
+        Move(from, to, piece: piece),
+      );
 
-    if (piecePlacementAfterMoving != currentPiecePlacement) {
-      // TODO: Is this if check necessary?
-      currentPiecePlacement = piecePlacementAfterMoving;
-      moveHistory.add(move);
+      final testingBoardAnalyzer = BoardAnalyzer(piecePlacementAfterMoving);
 
-      // Update castling rights
-      final index = piece.isWhite ? 0 : 1;
-      if (piece.pieceType == PieceType.king && !hasBothColorKingMoved[index]) {
-        hasBothColorKingMoved[index] = true;
-      } else if (piece.pieceType == PieceType.rook) {
-        final queenSideRookInitialSquare = Square(1, piece.isWhite ? 1 : 8);
-        final kingSideRookInitialSquare = Square(8, piece.isWhite ? 1 : 8);
-        if (from == queenSideRookInitialSquare &&
-            !hasBothColorRooksMoved[index][0]) {
-          hasBothColorRooksMoved[index][0] = true;
-        } else if (from == kingSideRookInitialSquare &&
-            !hasBothColorRooksMoved[index][1]) {
-          hasBothColorRooksMoved[index][1] = true;
-        }
+      final move = Move(
+        from,
+        to,
+        piece: piece,
+        capturesPiece: currentPiecePlacement.pieceAt(to) != null,
+        causesCheck: testingBoardAnalyzer.isKingInCheck(!piece.isWhite),
+      );
+
+      if (piecePlacementAfterMoving != currentPiecePlacement) {
+        // TODO: Is this if check necessary?
+        currentPiecePlacement = piecePlacementAfterMoving;
+        moveHistory.add(move);
+      }
+    }
+
+    // Update castling rights
+    final index = piece.isWhite ? 0 : 1;
+    if (piece.pieceType == PieceType.king && !hasBothColorKingMoved[index]) {
+      hasBothColorKingMoved[index] = true;
+    } else if (piece.pieceType == PieceType.rook) {
+      final queenSideRookInitialSquare = Square(1, piece.isWhite ? 1 : 8);
+      final kingSideRookInitialSquare = Square(8, piece.isWhite ? 1 : 8);
+      if (from == queenSideRookInitialSquare &&
+          !hasBothColorRooksMoved[index][0]) {
+        hasBothColorRooksMoved[index][0] = true;
+      } else if (from == kingSideRookInitialSquare &&
+          !hasBothColorRooksMoved[index][1]) {
+        hasBothColorRooksMoved[index][1] = true;
       }
     }
     // TODO: Save captured pieces and calculate advantage

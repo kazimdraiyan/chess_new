@@ -8,6 +8,8 @@ class Move {
   final Piece piece;
   final bool causesCheck;
   final bool capturesPiece;
+  // TODO: Should I use a separate class for castling moves instead of using a boolean?
+  final bool? isKingSideCastlingMove; // null means not a castling move.
 
   const Move(
     this.from,
@@ -15,10 +17,15 @@ class Move {
     required this.piece,
     this.causesCheck = false,
     this.capturesPiece = false,
+    this.isKingSideCastlingMove,
   });
 
-  // TODO: Implement correct algebraic notation
   String get algebraicNotation {
+    if (isKingSideCastlingMove != null) {
+      return isKingSideCastlingMove! ? 'O-O' : 'O-O-O';
+      // TODO: Why ! needed?
+    }
+
     var result = '';
 
     if (piece.pieceType != PieceType.pawn) {
@@ -35,7 +42,7 @@ class Move {
       result += '+';
     }
 
-    // TODO: Implement castling, promotion, en passant, checkmate, draw, disambiguating moves, etc.
+    // TODO: Implement castling [DONE], promotion, en passant, checkmate, draw, disambiguating moves, etc.
 
     return result;
   }

@@ -206,10 +206,6 @@ class BoardAnalyzer {
     return result;
   }
 
-  bool isCastlingAvailable(bool isWhite, bool isKingSide) {
-    return false;
-  }
-
   List<Square> _pawnfilteredMoves(Square square) {
     final pawnSquares = <Square>[];
     final pawnCapturableSquares = <Square>[];
