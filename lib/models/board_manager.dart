@@ -8,6 +8,7 @@ class BoardManager {
   var currentPiecePlacement = PiecePlacement.starting();
   final moveHistory = <Move>[];
 
+  // TODO: Give these variables more meaningful names
   var hasBothColorKingMoved = [false, false]; // [White, Black]
   var hasBothColorRooksMoved = [
     [false, false],
@@ -68,6 +69,22 @@ class BoardManager {
       // TODO: Is this if check necessary?
       currentPiecePlacement = piecePlacementAfterMoving;
       moveHistory.add(move);
+
+      // Update castling rights
+      final index = piece.isWhite ? 0 : 1;
+      if (piece.pieceType == PieceType.king && !hasBothColorKingMoved[index]) {
+        hasBothColorKingMoved[index] = true;
+      } else if (piece.pieceType == PieceType.rook) {
+        final queenSideRookInitialSquare = Square(1, piece.isWhite ? 1 : 8);
+        final kingSideRookInitialSquare = Square(8, piece.isWhite ? 1 : 8);
+        if (from == queenSideRookInitialSquare &&
+            !hasBothColorRooksMoved[index][0]) {
+          hasBothColorRooksMoved[index][0] = true;
+        } else if (from == kingSideRookInitialSquare &&
+            !hasBothColorRooksMoved[index][1]) {
+          hasBothColorRooksMoved[index][1] = true;
+        }
+      }
     }
     // TODO: Save captured pieces and calculate advantage
   }
