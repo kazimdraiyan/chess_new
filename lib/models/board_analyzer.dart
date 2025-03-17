@@ -29,7 +29,7 @@ class BoardAnalyzer {
     final result = <Square>[];
     for (final filteredMove in filteredMoves) {
       final testingBoardAnalyzer = BoardAnalyzer(
-        _piecePlacement.movePiece(Move(square, filteredMove)),
+        _piecePlacement.movePiece(Move(square, filteredMove, piece: piece)),
       );
       final selfKingSquare = testingBoardAnalyzer._piecePlacement.kingSquare(
         piece.isWhite,

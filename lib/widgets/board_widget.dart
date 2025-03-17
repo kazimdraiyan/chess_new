@@ -60,7 +60,7 @@ class _BoardWidgetState extends State<BoardWidget> {
       } else if (legalMoveSquares.contains(tappedSquare)) {
         // If there are highlighted squares, a square must be in the selected state. So selectedSquare will not be null.
         // No need to setState here, because widget.toggleWhitePerspective will call setState in the GameWidget.
-        widget.boardManager.movePiece(Move(selectedSquare!, tappedSquare));
+        widget.boardManager.movePiece(selectedSquare!, tappedSquare);
         lastMove = widget.boardManager.lastMove;
         unselectSquare();
         widget.updateGameWidgetAfterMakingMove();
@@ -106,9 +106,9 @@ class _BoardWidgetState extends State<BoardWidget> {
         final square = Square.fromId(id);
         final piece = widget.boardManager.currentPiecePlacement.pieceAt(square);
 
-        final isAttacked = widget.boardManager
-            .attackedSquares(widget.isWhitePerspective)
-            .contains(square);
+        // final isAttacked = widget.boardManager
+        //     .attackedSquares(widget.isWhitePerspective)
+        //     .contains(square);
         final isSelected = square == selectedSquare;
         final doesBelongToLastMove =
             square == lastMove?.from || square == lastMove?.to;
@@ -119,9 +119,13 @@ class _BoardWidgetState extends State<BoardWidget> {
         final Color? highlightColor;
         if (isSelected || doesBelongToLastMove) {
           highlightColor = Colors.yellow.withAlpha(100);
-        } else if (isAttacked) {
-          // TODO: Remove this
-          highlightColor = null; // Colors.red.withAlpha(150);
+        } else if ((lastMove?.causesCheck ?? false) &&
+            widget.boardManager.currentPiecePlacement.kingSquare(
+                  widget.isWhitePerspective,
+                ) ==
+                square) {
+          // King is in check
+          highlightColor = Colors.red.withAlpha(200);
         } else {
           highlightColor = null;
         }

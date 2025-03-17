@@ -23,14 +23,30 @@ class BoardManager {
     ).isOccupiedByEnemyPiece(square, isWhitePerspective);
   }
 
-  void movePiece(Move move) {
+  void movePiece(Square from, Square to) {
+    // TODO: Remove duplicate by extracting some piece of code to a method
+    final piece = currentPiecePlacement.pieceAt(from)!;
+
+    final testingPiecePlacement = currentPiecePlacement.movePiece(
+      Move(from, to, piece: piece),
+    );
+    final testingBoardAnalyzer = BoardAnalyzer(testingPiecePlacement);
+
+    final move = Move(
+      from,
+      to,
+      piece: piece,
+      capturesPiece: currentPiecePlacement.pieceAt(to) != null,
+      causesCheck: testingBoardAnalyzer
+          .attackedSquares(!piece.isWhite)
+          .contains(testingPiecePlacement.kingSquare(!piece.isWhite)),
+    );
     final piecePlacementAfterMoving = currentPiecePlacement.movePiece(move);
     if (piecePlacementAfterMoving != currentPiecePlacement) {
       currentPiecePlacement = piecePlacementAfterMoving;
       moveHistory.add(move);
     }
-    // TODO: Save captured pieces and calculater advantage
-    // TODO: Preserve move history
+    // TODO: Save captured pieces and calculate advantage
   }
 
   Move? get lastMove {
