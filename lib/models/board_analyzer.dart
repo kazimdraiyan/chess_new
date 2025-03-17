@@ -21,7 +21,11 @@ class BoardAnalyzer {
     return result;
   }
 
-  List<Square> legalMoves(Square square) {
+  List<Square> legalMoves(
+    Square square, {
+    bool? hasKingMoved,
+    List<bool>? hasRooksMoved,
+  }) {
     final piece = _piecePlacement.pieceAt(square)!;
 
     final filteredMoves = this.filteredMoves(square);
@@ -31,16 +35,17 @@ class BoardAnalyzer {
       final testingBoardAnalyzer = BoardAnalyzer(
         _piecePlacement.movePiece(Move(square, filteredMove, piece: piece)),
       );
-      final selfKingSquare = testingBoardAnalyzer._piecePlacement.kingSquare(
-        piece.isWhite,
-      );
-      if (!testingBoardAnalyzer
-          .attackedSquares(piece.isWhite)
-          .contains(selfKingSquare)) {
+      if (!testingBoardAnalyzer.isKingInCheck(piece.isWhite)) {
         // King would not be in check
         result.add(filteredMove);
       }
     }
+    if (piece.pieceType == PieceType.king && !hasKingMoved!) {
+      // hasKingMoved is non-null for sure, because a value is passed from BoardManager if the piece is a king
+      // Selected piece is a king and it hasn't moved yet
+      result.addAll(_kingCastleSquares(piece.isWhite, hasRooksMoved!));
+    }
+
     return result;
   }
 
@@ -153,6 +158,56 @@ class BoardAnalyzer {
     final kingSquares = square.kingSquares;
 
     return filterBlockageByFriendlyPieces(kingSquares, piece.isWhite);
+  }
+
+  List<Square> _kingCastleSquares(bool isWhite, List<bool> hasRooksMoved) {
+    final result = <Square>[];
+
+    if (!isKingInCheck(isWhite)) {
+      final rank = isWhite ? 1 : 8;
+
+      final emptyTestingFiles = [
+        [2, 3, 4],
+        [6, 7],
+      ]; // [Queen side, King side]
+      final attackTestingFiles = [
+        [3, 4],
+        [6, 7],
+      ]; // [Queen side, King side]
+
+      // i = 0 for Queen side, i = 1 for King side
+      for (var i = 0; i < 2; i++) {
+        if (hasRooksMoved[i]) continue;
+        // Rook of the side we're dealing with hasn't moved yet.
+
+        var areAllFilesBetweenEmpty = true;
+        for (final file in emptyTestingFiles[i]) {
+          if (!_piecePlacement.isEmpty(Square(file, rank))) {
+            areAllFilesBetweenEmpty = false;
+            break;
+          }
+        }
+        var areAllFilesThroughThePathKingTravelsNonAttacked = true;
+        final attackedSquares = this.attackedSquares(isWhite);
+        for (final file in attackTestingFiles[i]) {
+          if (attackedSquares.contains(Square(file, rank))) {
+            areAllFilesThroughThePathKingTravelsNonAttacked = false;
+            break;
+          }
+        }
+
+        if (areAllFilesBetweenEmpty &&
+            areAllFilesThroughThePathKingTravelsNonAttacked) {
+          final fileStep = i == 0 ? -2 : 2;
+          result.add(Square(5 + fileStep, rank));
+        }
+      }
+    }
+    return result;
+  }
+
+  bool isCastlingAvailable(bool isWhite, bool isKingSide) {
+    return false;
   }
 
   List<Square> _pawnfilteredMoves(Square square) {
@@ -278,5 +333,11 @@ class BoardAnalyzer {
   bool isOccupiedByEnemyPiece(Square testingSquare, bool isOriginalPieceWhite) {
     return !_piecePlacement.isEmpty(testingSquare) &&
         !isOccupiedByFriendlyPiece(testingSquare, isOriginalPieceWhite);
+  }
+
+  bool isKingInCheck(bool isWhite) {
+    return attackedSquares(
+      isWhite,
+    ).contains(_piecePlacement.kingSquare(isWhite));
   }
 }

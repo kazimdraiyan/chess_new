@@ -27,7 +27,7 @@ class Square {
       throw ArgumentError('File must be a letter between a and h');
     }
 
-    final rank = int.parse(algebraicNotation.substring(1));
+    final rank = int.parse(algebraicNotation[1]);
     if (rank < 1 || rank > 8) {
       throw ArgumentError('Rank must be a number between 1 and 8');
     }

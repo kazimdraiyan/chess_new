@@ -1,5 +1,6 @@
 import 'package:chess_new/models/board_analyzer.dart';
 import 'package:chess_new/models/move.dart';
+import 'package:chess_new/models/piece.dart';
 import 'package:chess_new/models/piece_placement.dart';
 import 'package:chess_new/models/square.dart';
 
@@ -7,8 +8,31 @@ class BoardManager {
   var currentPiecePlacement = PiecePlacement.starting();
   final moveHistory = <Move>[];
 
+  var hasBothColorKingMoved = [false, false]; // [White, Black]
+  var hasBothColorRooksMoved = [
+    [false, false],
+    [false, false],
+  ]; // [White[Queen side, King side], Black[Queen side, King side]]
+
   List<Square> legalMoves(Square square) {
-    return BoardAnalyzer(currentPiecePlacement).legalMoves(square);
+    bool? hasKingMoved;
+    List<bool>? hasRooksMoved;
+    if (currentPiecePlacement.pieceAt(square)!.pieceType == PieceType.king) {
+      hasKingMoved =
+          hasBothColorKingMoved[currentPiecePlacement.pieceAt(square)!.isWhite
+              ? 0
+              : 1];
+      hasRooksMoved =
+          hasBothColorRooksMoved[currentPiecePlacement.pieceAt(square)!.isWhite
+              ? 0
+              : 1];
+    }
+    // If the piece is not king, null will be passed to the named parameters
+    return BoardAnalyzer(currentPiecePlacement).legalMoves(
+      square,
+      hasKingMoved: hasKingMoved,
+      hasRooksMoved: hasRooksMoved,
+    );
   }
 
   List<Square> attackedSquares(bool isWhitePerspective) {
@@ -24,25 +48,24 @@ class BoardManager {
   }
 
   void movePiece(Square from, Square to) {
-    // TODO: Remove duplicate by extracting some piece of code to a method
     final piece = currentPiecePlacement.pieceAt(from)!;
 
-    final testingPiecePlacement = currentPiecePlacement.movePiece(
+    final piecePlacementAfterMoving = currentPiecePlacement.movePiece(
       Move(from, to, piece: piece),
     );
-    final testingBoardAnalyzer = BoardAnalyzer(testingPiecePlacement);
+
+    final testingBoardAnalyzer = BoardAnalyzer(piecePlacementAfterMoving);
 
     final move = Move(
       from,
       to,
       piece: piece,
       capturesPiece: currentPiecePlacement.pieceAt(to) != null,
-      causesCheck: testingBoardAnalyzer
-          .attackedSquares(!piece.isWhite)
-          .contains(testingPiecePlacement.kingSquare(!piece.isWhite)),
+      causesCheck: testingBoardAnalyzer.isKingInCheck(!piece.isWhite),
     );
-    final piecePlacementAfterMoving = currentPiecePlacement.movePiece(move);
+
     if (piecePlacementAfterMoving != currentPiecePlacement) {
+      // TODO: Is this if check necessary?
       currentPiecePlacement = piecePlacementAfterMoving;
       moveHistory.add(move);
     }

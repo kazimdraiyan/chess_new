@@ -74,31 +74,29 @@ class _GameWidgetState extends State<GameWidget> {
     return Column(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        // Padding(
-        //   padding: const EdgeInsets.symmetric(horizontal: 10),
-        //   child: TextField(
-        //     controller: textEditingController,
-        //     decoration: InputDecoration(
-        //       hintText: "Set FEN",
-        //       border: OutlineInputBorder(),
-        //     ),
-        //   ),
-        // ),
-        // SizedBox(height: 10),
-        // Padding(
-        //   padding: const EdgeInsets.symmetric(horizontal: 10),
-        //   child: Row(
-        //     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        //     children: [
-        //       OutlinedButton(
-        //         onPressed: resetToStartingPosition,
-        //         child: Text('Starting'),
-        //       ),
-        //       OutlinedButton(onPressed: setFen, child: Text('Set')),
-        //     ],
-        //   ),
-        // ),
-        // SizedBox(height: 10),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 10),
+          child: TextField(
+            controller: textEditingController,
+            decoration: InputDecoration(
+              hintText: "Set FEN",
+              border: OutlineInputBorder(),
+            ),
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 10),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              OutlinedButton(
+                onPressed: resetToStartingPosition,
+                child: Text('Starting'),
+              ),
+              OutlinedButton(onPressed: setFen, child: Text('Set')),
+            ],
+          ),
+        ),
         MoveHistoryWidget(
           moveHistory: boardManager.moveHistory,
           scrollController: moveHistoryScrollController,
@@ -113,7 +111,7 @@ class _GameWidgetState extends State<GameWidget> {
           padding: const EdgeInsets.symmetric(horizontal: 10),
           child: OutlinedButton(
             onPressed: () {
-              print('Test');
+              print('hoit');
             },
             child: Text('Click me'),
           ),

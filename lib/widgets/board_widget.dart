@@ -28,12 +28,6 @@ class _BoardWidgetState extends State<BoardWidget> {
   Move? lastMove;
   var legalMoveSquares = <Square>[];
 
-  @override
-  void initState() {
-    print('BoardWidget initState');
-    super.initState();
-  }
-
   void setIsBeingDragged(bool isBeingDragged) {
     // TODO: Should I wrap this with setState?
     this.isBeingDragged = isBeingDragged;
